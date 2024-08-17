@@ -1,8 +1,4 @@
-# Sample Hardhat Project
-
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a Hardhat Ignition module that deploys that contract.
-
-Try running some of the following tasks:
+# todo-solidity
 
 ```shell
 npx hardhat help
@@ -11,4 +7,19 @@ REPORT_GAS=true npx hardhat test
 npx hardhat node
 npx hardhat ignition deploy ./ignition/modules/Lock.ts
 ```
-# todo-solidity
+
+## front
+
+Авторизация ethers js metamask
+Проверка при авторизации на нужную hardтhat локаьную сеть
+Проверка адреса owner’а (не пускаем в случае не owner’а)
+
+После авторизации должен появляется блок тудушек с отображением управления (поменять имя, изменить статус)
+
+Приложение должно реагировать на блокчейн события
+На смену аккаунта
+На смену сети
+И корректно обрабатывать эти ошибки
+
+Стили ?
+По возможности добавить стили
