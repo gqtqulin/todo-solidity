@@ -3,13 +3,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import ethers from "ethers";
 
-import type { BrowserProvider } from "ethers";
-
-type ConnectionProps = {
-  provider: BrowserProvider | undefined;
-  signer: ethers.JsonRpcSigner | undefined;
-}
-
+import type { ConnectionProps } from "./types/types";
 
 export default function Home() {
   const [connection, setConnection] = useState<ConnectionProps>();
