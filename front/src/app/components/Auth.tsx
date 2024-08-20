@@ -4,22 +4,13 @@ import { ethers } from "ethers";
 import { TodoEngine__factory } from "../../../../typechain-types/factories/contracts/TodoEngine__factory";
 import { HARDHAT_NETWORK_ID, TODO_ADDRESS } from "../constant/constant";
 
-import type { ConnectionProps } from "../types/types";
-
-type AuthProps = {
-    connect: React.MouseEventHandler<HTMLButtonElement>;
-    dismiss: React.MouseEventHandler<HTMLButtonElement>;
-    connection: ConnectionProps;
-    setConnection: React.Dispatch<React.SetStateAction<ConnectionProps>>;
-}
+import type { ConnectionProps, AuthProps } from "../types/types";
 
 declare let window: any;
 
 const Auth: React.FunctionComponent<
     AuthProps
 > = ({
-    connect,
-    dismiss,
     connection,
     setConnection,
 }) => {
@@ -110,11 +101,11 @@ const Auth: React.FunctionComponent<
         );
     }
 
-    return (<>
+    return (<div>
         (showMsg && <p>{msg}</p>)
         {/* <span onClick={_switchShowingMsg}>✖️</span> */}
         <button onClick={_connectToMetamask}>connect</button>
-    </>)
+    </div>)
 }
 
 export default Auth;

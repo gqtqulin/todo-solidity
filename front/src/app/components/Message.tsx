@@ -1,18 +1,22 @@
 import React from "react";
 
-type MessageProps = {
-    message: string;
-    dismiss: React.MouseEventHandler<HTMLButtonElement>;
-}
+import { MessageProps } from "../types/types";
 
-const Message: React.FunctionComponent<MessageProps> 
-    = ({message, dismiss}) => {
+
+const Message: React.FC<MessageProps> = ({ message }) => {
+
+    const switchShowMessage = () => {
+
+    }
+
     return (<>
         {message}
-        <button type="button" onClick={dismiss}>
+        <button type="button" onClick={switchShowMessage}>
             <span aria-hidden="true">&times;</span>
         </button>
     </>)
 }
+
+
 
 export default Message;
