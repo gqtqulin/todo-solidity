@@ -45,4 +45,15 @@ contract TodoEngine is Ownable {
             task.deadline
         );
     }
+
+    function getAllTasks() external view onlyOwner returns (Task[] memory) {
+        uint total = tasks.length;
+        Task[] memory copy = new Task[](total);
+
+        for (uint256 i = 0; i < total; i++) {
+            copy[i] = tasks[i];
+        }
+
+        return copy;
+    }
 }

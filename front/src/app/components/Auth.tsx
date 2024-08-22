@@ -17,11 +17,11 @@ const Auth: React.FunctionComponent<
     const [showMsg, setShowMsg] = useState<boolean>(true);
     const [msg, setMsg] = useState<string>("Подключите Metamask!")
 
-    const _switchShowingMsg = () => {
-        setShowMsg(() => {
-            return !showMsg;
-        })
-    }
+    // const _switchShowingMsg = () => {
+    //     setShowMsg(() => {
+    //         return !showMsg;
+    //     })
+    // }
 
     const _init = async (address: string) => {
         const provider = new ethers.BrowserProvider(window.ethereum);
@@ -51,7 +51,7 @@ const Auth: React.FunctionComponent<
         return r;
     }
 
-    const _resetState = () => {
+    const _resetConnection = () => {
         setConnection({
             provider: undefined,
             signer: undefined,
@@ -73,6 +73,8 @@ const Auth: React.FunctionComponent<
             method: "eth_requestAccounts",
         });
 
+        console.log(`user connected with address: ${address}`)
+
         await _init(address);
 
         window.ethereum.on(
@@ -87,7 +89,7 @@ const Auth: React.FunctionComponent<
                     return;
                 }
 
-                _resetState();
+                _resetConnection();
 
                 await _init(newAccount);
             },
@@ -96,13 +98,13 @@ const Auth: React.FunctionComponent<
         window.ethereum.on(
             "chainChanged",
             ([_networkId]: any) => {
-                _resetState();
+                _resetConnection();
             }
         );
     }
 
     return (<div>
-        (showMsg && <p>{msg}</p>)
+        {showMsg && <p>{msg}</p>}
         {/* <span onClick={_switchShowingMsg}>✖️</span> */}
         <button onClick={_connectToMetamask}>connect</button>
     </div>)

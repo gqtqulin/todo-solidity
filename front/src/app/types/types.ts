@@ -4,7 +4,6 @@ import type { BrowserProvider } from "ethers";
 import type { TodoEngine } from "../../../../typechain-types/contracts/TodoEngine";
 
 
-
 export type ConnectionProps = {
     provider: BrowserProvider | undefined;
     signer: ethers.JsonRpcSigner | undefined;
@@ -17,14 +16,15 @@ export type AuthProps = {
 }
 
 export type EngineProps = {
-
+    tasks: Array<TaskProps>;
+    connection: ConnectionProps;
 }
 
 export type MessageProps = {
     message: string;
+    showMessage: boolean;
+    setShowMessage: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
-
 
 export type TaskProps = {
     title: string;
