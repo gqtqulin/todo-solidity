@@ -17,6 +17,7 @@ export type AuthProps = {
 
 export type EngineProps = {
     tasks: Array<TaskProps>;
+    setTasks: React.Dispatch<React.SetStateAction<Array<TaskProps>>>;
     connection: ConnectionProps;
 }
 
@@ -33,5 +34,7 @@ export type TaskProps = {
     deadline: BigInt;
 }
 
-
+export type ChangeMode = {
+    [index: number]: boolean | undefined;
+}
 

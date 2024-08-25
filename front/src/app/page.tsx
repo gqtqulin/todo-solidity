@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useState, useEffect } from "react";
-import ethers from "ethers";
+import { ethers } from "ethers";
 
 import Auth from "./components/Auth";
 import Engine from "./components/Engine";
@@ -55,7 +55,9 @@ export default function Home() {
       <Message
         message={message} showMessage={showMessage} setShowMessage={setShowMessage}
       />}
-      {connection?.todo && isOwner && <Engine connection={connection} tasks={tasks} />}
+      {connection?.todo && isOwner &&
+        <Engine connection={connection} tasks={tasks} setTasks={setTasks} />
+      }
     </main>
   );
 }

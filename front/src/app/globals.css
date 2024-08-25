@@ -2,12 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+button {
+  border: 1px solid black;
+}
+
+button:hover {
+  color: white;
+  background-color: black;
+}
+
+input {
+  border: 1px solid black;
+}
+
+* {
+  padding: 1px;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
-}
-
+} */
+/* 
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
@@ -30,4 +53,4 @@ body {
   .text-balance {
     text-wrap: balance;
   }
-}
+} */
