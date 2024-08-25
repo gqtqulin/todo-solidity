@@ -30,8 +30,16 @@ contract TodoEngine is Ownable {
         tasks[index].title = _title; 
     }
 
+    function changeTaskDescription(string calldata _desc, uint256 index) external onlyOwner {
+        tasks[index].description = _desc;
+    }
+
     function changeTaskStatus(uint256 index) external onlyOwner {
         tasks[index].completed = !tasks[index].completed;
+    }
+
+    function changeTaskDeadline(uint256 _dl, uint256 index) external onlyOwner {
+        tasks[index].deadline = _dl;
     }
 
     function getTask(uint256 index) external view onlyOwner

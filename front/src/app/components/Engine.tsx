@@ -1,6 +1,8 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
 import { EngineProps, TaskProps, ChangeMode } from "../types/types";
 
+const BACKUP_TASK = "backupTask";
+
 const Engine: React.FunctionComponent<
     EngineProps
 > = ({
@@ -9,34 +11,94 @@ const Engine: React.FunctionComponent<
     connection
 })=> {
     const [txSent, setTxSent] = useState<boolean>(false);
-    const [changeMode, setChangeMode] = useState<ChangeMode>({});
+    const [changeMode, setChangeMode] = useState<number>(-1);
+
+
+    const _saveStorage = (obj: any) => {
+        localStorage.setItem(BACKUP_TASK, JSON.stringify(obj, (_, v) => {
+            return typeof(v) === "bigint" ? v.toString() : v;
+        }));
+    }
+
+    const _loadStorage = () => {
+        let r = null;
+        const backupTask = localStorage.getItem(BACKUP_TASK)
+        if (backupTask) {
+            r = JSON.parse(backupTask, (k, v) => {
+                return k === "deadline" ? BigInt(v) : v;
+            });
+        }
+        return r;
+    }
+
+    const _handleChangeStatus = (e: ChangeEvent<HTMLInputElement>, i: number) => {
+        //console.log(`_handleChangeStatus() - e.target.checked: ${e.target.checked}`)
+
+        const newStatus: boolean = e.target.checked;
+        
+        const newTasks: TaskProps[] = tasks;
+        newTasks[i].completed = newStatus;
+
+        setTasks([
+            ...newTasks,
+        ])
+    }
+
+    const _handleChangeTitle = (e: ChangeEvent<HTMLInputElement>, i: number) => {
+        // console.log(e.target.value);
+
+        const newTitle: string = e.target.value;
+
+        const newTasks: TaskProps[] = tasks;
+        newTasks[i].title = newTitle;
+
+        setTasks([
+            ...newTasks,
+        ])
+    }
 
     const _handleChangeMode = (i: number) => {
-        setChangeMode(() => {
-
-            let v: boolean | undefined = changeMode[i];
-            console.log(`_handleChangeMode() - v 1: ${v}`)
-
-            if (v === undefined) {
-                v = false;
-            }
-
-            v = !v;
-            console.log(`_handleChangeMode() - v 2: ${v}`)
-
-            return {
-                ...changeMode,
-                i: v,
-            }
-        })
+        setChangeMode(i);
+        _saveStorage({
+            i: i,
+            data: tasks[i],
+        });
     }
 
-    const _handleTitleChange = () => {
+    const _handleCancelChangeMode = (i: number) => {
+        const backupTask = _loadStorage();
+        if (backupTask) {
+            const backupTasks: TaskProps[] = tasks;
+            backupTasks[i] = backupTask.data;
+    
+            setTasks([
+                ...backupTasks
+            ]);
+        }
 
+        localStorage.removeItem(BACKUP_TASK);
+        setChangeMode(-1);
     }
 
-    const _changeTitle = () => {
-        
+    const _handleSaveChanges = (i: number) => {
+        const backupTask = _loadStorage();
+
+        if (backupTask) {
+            try {
+                const keys = Object.keys(backupTask);
+                keys.forEach((k) => {
+                    // if (tasks[i][k] !== backupTask[k]) {
+
+                    // }
+                });
+            } catch (e) {
+
+            } finally {
+
+            }
+        }
+
+        localStorage.removeItem(BACKUP_TASK);
     }
 
     const _changeStatus = async (e: ChangeEvent<HTMLInputElement>, i: number) => {
@@ -46,9 +108,9 @@ const Engine: React.FunctionComponent<
             return false;
         }
 
-        setTxSent(true);
-
         try {
+            setTxSent(true);
+
             const tx = await connection.todo.changeTaskStatus(i);
             await tx.wait();
 
@@ -66,6 +128,27 @@ const Engine: React.FunctionComponent<
         } catch (e) {
             console.log(e);
             // err msg alert?
+        } finally {
+            setTxSent(false);
+        }
+    }
+
+    const _changeTitle = async (e: ChangeEvent<HTMLInputElement>, i: number) => {
+        e.preventDefault();
+
+        if (!connection.todo) {
+            return false;
+        }
+
+        try {
+            setTxSent(true);
+
+            const tx = await connection.todo.changeTaskTitle("", i);
+            tx.wait();
+
+            console.log(`изменение названия задачи, хэш транзакци: ${tx.hash}`);
+        } catch (e) {
+            console.log(e);
         } finally {
             setTxSent(false);
         }
@@ -131,8 +214,10 @@ const Engine: React.FunctionComponent<
 
                         <label className="pr-2">
                             Имя:
-                            <input type="text" value={task.title}
-                                onChange={_handleTitleChange} disabled={txSent || changeMode[i]} />
+                            <input type="text" value={task.title} disabled={txSent || !(changeMode === i)} 
+                                onChange={(e) => {
+                                    _handleChangeTitle(e, i)
+                                }} />
                         </label>
 
                         <label className="pr-2">
@@ -142,8 +227,10 @@ const Engine: React.FunctionComponent<
 
                         <label className="pr-2">
                             Статус:
-                            <input type="checkbox" disabled={txSent || changeMode[i]} checked={task.completed}
-                                onChange={(e: ChangeEvent<HTMLInputElement>) => _changeStatus(e, i)} />
+                            <input type="checkbox" disabled={txSent || !(changeMode === i)} checked={task.completed}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                                    _handleChangeStatus(e, i);
+                                }} />
                         </label>
 
                         <label className="pr-4">
@@ -151,9 +238,26 @@ const Engine: React.FunctionComponent<
                             <input type="text" value={task.deadline.toLocaleString()} disabled={true}  />
                         </label>
 
-                        <button disabled={txSent} onClick={() => _handleChangeMode(i)}>
-                            Изменить
-                        </button>
+                        <div className="flex flex-row ">
+                            <button 
+                                disabled={txSent || (changeMode === i)}
+                                className="flex-1"
+                                onClick={() => _handleChangeMode(i)}>
+                                    Редактировать
+                            </button>
+                            <button
+                                className="flex-1"
+                                disabled={txSent || !(changeMode === i)}
+                                onClick={() => _handleSaveChanges(i)}>
+                                    Сохранить
+                            </button>
+                            <button
+                                className="flex-1"
+                                disabled={txSent || !(changeMode === i)}
+                                onClick={() => _handleCancelChangeMode(i)}>
+                                    Отмена
+                            </button>
+                        </div>
                     </>
                 </li>
             )

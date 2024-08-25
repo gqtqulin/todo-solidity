@@ -11,6 +11,11 @@ button:hover {
   background-color: black;
 }
 
+button:disabled {
+  color: rgb(103, 103, 103);
+  background-color: rgb(64, 64, 64);
+}
+
 input {
   border: 1px solid black;
 }
